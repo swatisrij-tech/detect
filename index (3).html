@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SepDetect — Early Sepsis Detection</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- ══════════════════════════════════════
+     LOGIN PAGE
+══════════════════════════════════════ -->
+<div class="page active" id="page-login">
+  <div class="login-wrap">
+    <div class="login-card">
+      <div class="login-logo">
+        <h1>Sep<span>Detect</span></h1>
+        <p>Early detection saves lives</p>
+      </div>
+      <div class="role-tabs">
+        <button class="role-tab active" onclick="setRole('user')">Patient / User</button>
+        <button class="role-tab" onclick="setRole('doctor')">Doctor</button>
+      </div>
+
+      <!-- Login Form -->
+      <div id="login-form">
+        <div class="form-group">
+          <label>Gmail Address</label>
+          <input type="email" id="login-email" placeholder="you@gmail.com" />
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="login-pass" placeholder="••••••••" />
+        </div>
+        <button class="btn-primary" onclick="handleLogin()">Sign In</button>
+        <div class="auth-toggle">Don't have an account? <a onclick="showRegister()">Register here</a></div>
+      </div>
+
+      <!-- Register Form -->
+      <div id="register-form" style="display:none">
+        <div class="form-group">
+          <label>Full Name</label>
+          <input type="text" id="reg-name" placeholder="Your full name" />
+        </div>
+        <div class="form-group">
+          <label>Gmail Address</label>
+          <input type="email" id="reg-email" placeholder="you@gmail.com" />
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="reg-pass" placeholder="Create password" />
+        </div>
+        <button class="btn-primary" onclick="handleRegister()">Create Account</button>
+        <div class="auth-toggle">Already have an account? <a onclick="showLogin()">Sign in</a></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     HOME PAGE
+══════════════════════════════════════ -->
+<div class="page" id="page-home">
+  <nav>
+    <div class="nav-brand">🩺 Sep<span>Detect</span></div>
+    <div class="nav-links">
+      <span id="nav-user-name" style="color:rgba(255,255,255,.7);font-size:13px;align-self:center;margin-right:4px"></span>
+      <button class="nav-btn" onclick="goTo('page-login')">Sign Out</button>
+    </div>
+  </nav>
+  <div class="home-hero">
+    <h1><strong>Sep</strong><span>Detect</span></h1>
+    <p>AI-assisted sepsis screening for early detection, better outcomes and smarter healthcare decisions.</p>
+  </div>
+  <div style="padding:24px;max-width:860px;margin:0 auto">
+    <div class="sepsis-info">
+      <h2>What is Sepsis?</h2>
+      <p>Sepsis is a life-threatening medical emergency that occurs when the body's response to an infection spirals out of control, damaging its own tissues and organs. It can develop rapidly and may lead to septic shock, multi-organ failure, and death if not treated immediately. Early recognition and treatment are critical — every hour of delay increases mortality risk significantly.</p>
+      <div class="stat-row">
+        <div class="stat-chip"><div class="num">49M</div><div class="lbl">Cases/year globally</div></div>
+        <div class="stat-chip"><div class="num">11M</div><div class="lbl">Deaths annually</div></div>
+        <div class="stat-chip"><div class="num">20%</div><div class="lbl">Mortality rate</div></div>
+        <div class="stat-chip"><div class="num">1hr</div><div class="lbl">Critical response window</div></div>
+      </div>
+    </div>
+    <div class="action-cards">
+      <div class="action-card" onclick="goTo('page-patient-form')">
+        <div class="icon" style="background:#EBF5FB">🏥</div>
+        <h3>Make Your Dashboard</h3>
+        <p>Create your personal health profile with medical history, vitals, and risk factors. Track your health data and receive personalized insights.</p>
+        <div class="cta">Set up profile →</div>
+      </div>
+      <div class="action-card" onclick="goTo('page-doctor-form')">
+        <div class="icon" style="background:#EAFAF1">👨‍⚕️</div>
+        <h3>Register as Doctor</h3>
+        <p>Join SepDetect as a healthcare provider. Access patient data, review screening results, and provide medical guidance remotely.</p>
+        <div class="cta">Join as doctor →</div>
+      </div>
+      <div class="action-card" onclick="startScreening()" style="border:2px solid var(--accent)">
+        <div class="icon" style="background:#E8FBF7">🔬</div>
+        <h3>Sepsis Detect</h3>
+        <p>Answer the clinically validated sepsis screening questionnaire. Get your risk score and know if you need urgent medical attention.</p>
+        <div class="cta" style="color:var(--accent)">Start screening →</div>
+      </div>
+    </div>
+    <div id="dashboard-quick-access" style="display:none;max-width:860px;padding:0 24px 24px"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     PATIENT FORM PAGE
+══════════════════════════════════════ -->
+<div class="page" id="page-patient-form">
+  <nav>
+    <div class="nav-brand">🩺 Sep<span>Detect</span></div>
+    <div class="nav-links"><button class="nav-btn" onclick="goTo('page-home')">← Home</button></div>
+  </nav>
+  <div class="page-container">
+    <button class="back-btn" onclick="goTo('page-home')">← Back to home</button>
+    <div class="page-header">
+      <h2>Build Your Health Dashboard</h2>
+      <p>Fill in your details to create a personalized health profile</p>
+    </div>
+    <div class="avatar-upload" onclick="document.getElementById('avatar-input').click()">
+      <div class="avatar-circle" id="avatar-preview">+</div>
+      <div>
+        <div style="font-weight:600;font-size:14px;color:var(--primary)">Add Profile Photo</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:2px">Click to upload (optional)</div>
+      </div>
+    </div>
+    <input type="file" id="avatar-input" accept="image/*" style="display:none" onchange="previewAvatar(event)">
+    <div class="form-grid">
+      <div class="form-group"><label>Full Name *</label><input id="p-name" placeholder="John Doe" /></div>
+      <div class="form-group"><label>Age *</label><input id="p-age" type="number" placeholder="35" /></div>
+      <div class="form-group full">
+        <label>Gender</label>
+        <div class="gender-row">
+          <div class="gender-chip active" onclick="selectGender(this,'Male')">Male</div>
+          <div class="gender-chip" onclick="selectGender(this,'Female')">Female</div>
+          <div class="gender-chip" onclick="selectGender(this,'Non-binary')">Non-binary</div>
+          <div class="gender-chip" onclick="selectGender(this,'Prefer not to say')">Prefer not to say</div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Blood Group</label>
+        <select id="p-blood">
+          <option value="">Select</option>
+          <option>A+</option><option>A-</option><option>B+</option><option>B-</option>
+          <option>AB+</option><option>AB-</option><option>O+</option><option>O-</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Glucose Level (mg/dL)</label><input id="p-glucose" type="number" placeholder="90-120" /></div>
+      <div class="form-group"><label>Resting Heart Rate (bpm)</label><input id="p-heartrate" type="number" placeholder="60-100" /></div>
+      <div class="form-group"><label>Cholesterol (mg/dL)</label><input id="p-cholesterol" type="number" placeholder="&lt; 200" /></div>
+      <div class="form-group"><label>Phone Number</label><input id="p-phone" placeholder="+91 9876543210" /></div>
+      <div class="form-group full">
+        <label>Patient History / Current Conditions</label>
+        <textarea id="p-history" rows="4" placeholder="List any chronic illnesses, medications, surgeries, allergies, or relevant medical history..."></textarea>
+      </div>
+    </div>
+    <button class="btn-primary" onclick="savePatient()">Save Dashboard</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     PATIENT DASHBOARD
+══════════════════════════════════════ -->
+<div class="page" id="page-patient-dashboard">
+  <nav>
+    <div class="nav-brand">🩺 Sep<span>Detect</span></div>
+    <div class="nav-links">
+      <button class="nav-btn" onclick="goTo('page-home')">Home</button>
+      <button class="nav-btn accent" onclick="startScreening()">Screen Now</button>
+    </div>
+  </nav>
+  <div class="dashboard-wrap">
+    <div class="profile-banner">
+      <div class="profile-avatar" id="dash-avatar">?</div>
+      <div>
+        <div style="font-size:11px;opacity:.6;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Patient Profile</div>
+        <h2 id="dash-name">—</h2>
+        <p id="dash-subtitle">—</p>
+      </div>
+    </div>
+    <div class="info-grid" id="dash-info-grid"></div>
+    <div class="reviews-section">
+      <h3>Doctor Reviews &amp; Notes</h3>
+      <div id="patient-reviews">
+        <div class="review-empty">No doctor reviews yet. A registered doctor can leave notes on your profile.</div>
+      </div>
+    </div>
+    <div style="margin-top:16px">
+      <button class="btn-outline" onclick="goTo('page-patient-form')">Edit Profile</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     DOCTOR FORM
+══════════════════════════════════════ -->
+<div class="page" id="page-doctor-form">
+  <nav>
+    <div class="nav-brand">🩺 Sep<span>Detect</span></div>
+    <div class="nav-links"><button class="nav-btn" onclick="goTo('page-home')">← Home</button></div>
+  </nav>
+  <div class="doctor-hero">
+    <h2>Register as a Doctor</h2>
+    <p>Join our network of healthcare professionals</p>
+  </div>
+  <div class="page-container">
+    <button class="back-btn" onclick="goTo('page-home')">← Back to home</button>
+    <div class="form-grid">
+      <div class="form-group full"><label>Full Name *</label><input id="d-name" placeholder="Dr. Jane Smith" /></div>
+      <div class="form-group"><label>Email *</label><input id="d-email" type="email" placeholder="dr@hospital.com" /></div>
+      <div class="form-group"><label>Phone Number</label><input id="d-phone" placeholder="+91 9876543210" /></div>
+      <div class="form-group"><label>Department</label><input id="d-dept" placeholder="e.g. Internal Medicine" /></div>
+      <div class="form-group"><label>Speciality</label><input id="d-spec" placeholder="e.g. Critical Care" /></div>
+      <div class="form-group full"><label>Hospital / Clinic</label><input id="d-hospital" placeholder="e.g. AIIMS New Delhi" /></div>
+      <div class="form-group"><label>Medical License No. *</label><input id="d-license" placeholder="MCI-XXXXXX" /></div>
+      <div class="form-group"><label>Years of Experience</label><input id="d-exp" type="number" placeholder="5" /></div>
+      <div class="form-group full">
+        <label>Role</label>
+        <select id="d-role">
+          <option value="">Select role</option>
+          <option>Attending Physician</option>
+          <option>Consultant</option>
+          <option>Resident Doctor</option>
+          <option>Emergency Specialist</option>
+          <option>ICU Specialist</option>
+          <option>General Practitioner</option>
+        </select>
+      </div>
+    </div>
+    <button class="btn-primary" onclick="saveDoctor()">Register as Doctor</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     DOCTOR DASHBOARD
+══════════════════════════════════════ -->
+<div class="page" id="page-doctor-dashboard">
+  <nav>
+    <div class="nav-brand">🩺 Sep<span>Detect</span></div>
+    <div class="nav-links">
+      <button class="nav-btn" onclick="goTo('page-home')">Home</button>
+    </div>
+  </nav>
+  <div class="dashboard-wrap">
+    <div class="doctor-profile">
+      <div class="profile-avatar" style="background:rgba(255,255,255,.15)">👨‍⚕️</div>
+      <div>
+        <div style="font-size:11px;opacity:.6;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Verified Healthcare Provider</div>
+        <h2 id="doc-name">—</h2>
+        <p id="doc-sub" style="font-size:13px;opacity:.75;margin-top:2px">—</p>
+        <div class="doctor-badge" id="doc-role-badge">—</div>
+      </div>
+    </div>
+    <div class="info-grid" id="doc-info-grid"></div>
+    <div style="font-size:14px;font-weight:600;color:var(--primary);margin-bottom:12px">Registered Patients</div>
+    <div class="patients-list" id="patients-list-container">
+      <div class="review-empty">No patients registered yet.</div>
+    </div>
+  </div>
+
+  <!-- Patient Detail Modal -->
+  <div class="modal-overlay" id="patient-modal" style="display:none">
+    <div class="modal">
+      <button class="modal-close" onclick="closeModal()">×</button>
+      <h3 id="modal-patient-name">Patient Details</h3>
+      <div id="modal-patient-info"></div>
+      <div class="section-divider" style="margin-top:16px">Write Review / Notes</div>
+      <div class="form-group" style="margin-top:8px">
+        <label>Your Medical Notes</label>
+        <textarea id="review-text" rows="4" placeholder="Add clinical notes, recommendations, or follow-up instructions..."></textarea>
+      </div>
+      <button class="btn-primary" onclick="submitReview()">Submit Review</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SCREENING PAGE
+══════════════════════════════════════ -->
+<div class="page" id="page-screening">
+  <nav>
+    <div class="nav-brand">🩺 Sep<span>Detect</span></div>
+    <div class="nav-links"><button class="nav-btn" onclick="goTo('page-home')">← Exit</button></div>
+  </nav>
+  <div class="screening-wrap">
+    <div style="margin-bottom:8px;font-size:13px;color:var(--muted);display:flex;justify-content:space-between">
+      <span id="q-counter">Question 1 of 20</span>
+      <span id="q-section">Section A</span>
+    </div>
+    <div class="screening-progress">
+      <div class="screening-progress-bar" id="progress-bar" style="width:5%"></div>
+    </div>
+    <div class="question-card">
+      <div class="question-section" id="q-section-label"></div>
+      <div class="question-num" id="q-num"></div>
+      <div class="question-text" id="q-text"></div>
+      <div class="options" id="q-options"></div>
+      <div class="nav-btns">
+        <button class="btn-nav" onclick="prevQ()" id="btn-prev">← Back</button>
+        <button class="btn-nav next" onclick="nextQ()" id="btn-next">Next →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     RESULT PAGE
+══════════════════════════════════════ -->
+<div class="page" id="page-result">
+  <nav>
+    <div class="nav-brand">🩺 Sep<span>Detect</span></div>
+    <div class="nav-links"><button class="nav-btn" onclick="goTo('page-home')">Home</button></div>
+  </nav>
+  <div class="screening-wrap">
+    <div class="result-card">
+      <div class="score-ring" id="score-ring">
+        <div class="score-num" id="final-score">0</div>
+        <div class="score-lbl">points</div>
+      </div>
+      <div class="result-level" id="result-level">—</div>
+      <div class="result-desc" id="result-desc">—</div>
+      <div id="red-flag-section"></div>
+      <div id="result-action-btns" style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+        <button class="btn-primary" style="width:auto;padding:12px 24px" onclick="startScreening()">Retake Screening</button>
+        <button class="btn-outline" onclick="goTo('page-home')">Back to Home</button>
+      </div>
+    </div>
+    <div id="score-breakdown" style="margin-top:20px;background:#fff;border-radius:14px;padding:20px;border:1px solid var(--border)">
+      <div style="font-size:14px;font-weight:600;color:var(--primary);margin-bottom:12px">Score Breakdown</div>
+      <div id="breakdown-list"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast notification -->
+<div class="toast" id="toast"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
